@@ -98,6 +98,12 @@ private[spark] object BsonCompatibility {
   }
 
   object ObjectId extends CompatibilityBase[BsonObjectId] {
+    override val fields: Seq[StructField] = Seq(DataTypes.createStructField("oid", DataTypes.StringType, false))
+    override def toSparkData(bsonValue: BsonObjectId): Array[Any] = Array(bsonValue.getValue.toHexString)
+    override def fromSparkData(row: Row): BsonObjectId = new BsonObjectId(new org.bson.types.ObjectId(row.getString(0)))
+  }
+
+  object ObjectIdNullable extends CompatibilityBase[BsonObjectId] {
     override val fields: Seq[StructField] = Seq(DataTypes.createStructField("oid", DataTypes.StringType, true))
     override def toSparkData(bsonValue: BsonObjectId): Array[Any] = Array(bsonValue.getValue.toHexString)
     override def fromSparkData(row: Row): BsonObjectId = new BsonObjectId(new org.bson.types.ObjectId(row.getString(0)))
